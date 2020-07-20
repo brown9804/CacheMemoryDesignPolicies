@@ -11,7 +11,7 @@ July, 2020
 
 Cache memory with LRU, LFU, LIFO and FIFO politics
 
-## Program action's
+## Program actions
 
 * Compile -->
 ~~~
