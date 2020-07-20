@@ -195,7 +195,7 @@ int main(int argc, char** argv)
 	delete [] tagsLFU;
 	delete [] tagsLIFO;
 	delete [] tagsFIFO;
-return true
+
 }
 
 bool isHit(struct cacheBlock tags[], int index, int tag, int assoc, int *way){
@@ -253,7 +253,8 @@ void updateLFU(struct cacheBlock tags[], int index, int way, int assoc){
 ///////////////////////// *********** ///////////////////////////
 ///////////////////////// *********** ///////////////////////////
 ///////////////////////// *********** ///////////////////////////
-
+// Counts the number of times each address has been accessed
+// and removes those that have been accessed less frequently.
 int getVictimLFU(struct cacheBlock tags[], int index, int assoc){
 	//check empty way
 	int i;
@@ -265,9 +266,14 @@ int getVictimLFU(struct cacheBlock tags[], int index, int assoc){
 		}
 	}
 	//----------look for the victim way ------------
+	// ***. If there is a fault and if there is no counter at zero
+	// then it lowers them all the same amount until it reaches
+	// zero to some and eliminates the first zero it finds by
+	// running it from right LS to left MS.
+
 	for(i=0; i<assoc;i++)
 	{
-		if(tags[(index*assoc)+i].replacement==(assoc-1))
+		if(tags[(index*assoc)+i].replacement==0)
 			return i;
 	}
 	return 0;
