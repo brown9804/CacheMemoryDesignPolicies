@@ -1,4 +1,4 @@
-# Cache_Memory
+# Cache Memory
 ----------
 
 University of Costa Rica
