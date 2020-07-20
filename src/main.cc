@@ -1,8 +1,24 @@
+// Belinda Brown
+// July, 2020
+// Based on the material provided - Digital Computer Structures I
+// And theoretical support from MJ Arce :)
+
+// This algorithm represents a cache that receives the cache size
+// in bytes, block size in bytes, associativity and a file of addresses,
+// and determined that the last address is 0, Return the failure rate according
+// to the addresses given for a policy of replacement LFU.
+
+
+
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <cmath>
 #include <assert.h>
+
+// Execute by
+// ./<program> <Mem bytes(#)> <Block size(#)> <associativity(#)> <file .h>
+
 
 struct cacheBlock{
 	int tag;
@@ -11,23 +27,23 @@ struct cacheBlock{
 	int replacement;
 };
 
-//Funciones genéricas
+//Generic Def
 bool isPowerOf2(int x);
 bool isHit(struct cacheBlock tags[], int index, int tag, int assoc, int *way);
 
-//Funciones para la cache LRU
+//Def cache LRU
 void updateLRU(struct cacheBlock tags[], int index, int way, int assoc);
 int getVictimLRU(struct cacheBlock tags[], int index, int assoc);
 
-//Funciones para la cache LFU
+//Def cache LFU
 void updateLFU(struct cacheBlock tags[], int index, int way, int assoc);
 int getVictimLFU(struct cacheBlock tags[], int index, int assoc);
 
-//Funciones para la cache LIFO
+//Def la cache LIFO
 void updateLIFO(struct cacheBlock tags[], int index, int way, int assoc);
 int getVictimLIFO(struct cacheBlock tags[], int index, int assoc);
 
-//Funciones para la cache FIFO
+//Def cache FIFO
 void updateFIFO(struct cacheBlock tags[], int index, int way, int assoc);
 int getVictimFIFO(struct cacheBlock tags[], int index, int assoc);
 
@@ -45,23 +61,24 @@ int main(int argc, char** argv)
 
     if(argc==5)
     {
-        cacheSize=std::stoi(argv[1]);
-    	assert(isPowerOf2(cacheSize)&&"cacheSize must be power of 2");
+			cacheSize=std::stoi(argv[1]);
+			assert(isPowerOf2(cacheSize)&&"\n\nCache size must be power of 2!");
 
-        assoc=std::stoi(argv[2]);
-    	assert(isPowerOf2(assoc)&&"assoc must be power of 2");
-    	assert(cacheSize>assoc&&"cacheSize must be greater than assoc");
+			assoc=std::stoi(argv[2]);
+			assert(isPowerOf2(assoc)&&"\nAssoc must be power of 2!");
+			assert(cacheSize>assoc&&"\nCache size must be greater than assoc!");
 
-        blockSize=std::stoi(argv[3]);
-    	assert(isPowerOf2(blockSize)&&"blockSize must be power of 2");
-    	assert(cacheSize>blockSize&&"cacheSize must be greater than blockSize");
+			blockSize=std::stoi(argv[3]);
+			assert(isPowerOf2(blockSize)&&"\nBlock size must be power of 2!");
+			assert(cacheSize>blockSize&&"\nCache size must be greater than blockSize!");
 
-        addressesFile.append(argv[4]);
+			addressesFile.append(argv[4]);
 
         //std::cout<<cacheSize<<assoc<<blockSize<<addressesFile<<std::endl;
     }
     else{
-    	std::cout<<"usage: ./cache cache_size Assoc Block_size Accesses_file"<<std::endl;
+			// Usage: ./ cache_size Assoc Block_size Accesses_file
+			std::cout<<"\nUsage: ./<program> <Mem bytes(#)> <Block size(#)> <associativity(#)> <file .h>"<<std::endl;
     	return -1;
     }
 
@@ -71,7 +88,7 @@ int main(int argc, char** argv)
     indexBits=log2(numSets);
     indexMask=numSets-1;
 
-	std::cout<<"Simulando cache de "<<cacheSize<<" bytes, "<<numTags<<" bloques, "<<numSets<<" conjuntos, "<<assoc<<" vías, "<<offsetBits<<" bits de offset y "<<indexBits<<" bits de index"<<std::endl;
+	std::cout<<"\nSimulating cache of "<<cacheSize<<" bytes, "<<numTags<<" blocks, "<<numSets<<" sets, "<<assoc<<" ways or associativity, "<<offsetBits<<" offset bits and "<<indexBits<<" index bits"<<std::endl;
 
 	struct cacheBlock *tagsLRU=new cacheBlock[numTags];
 	struct cacheBlock *tagsLFU=new cacheBlock[numTags];
@@ -79,7 +96,6 @@ int main(int argc, char** argv)
 	struct cacheBlock *tagsFIFO=new cacheBlock[numTags];
 
 	for(int i=0; i<numSets; i++){
-//		setsLRU[i]=0x00010203;
 		for(int j=0;j<assoc;j++){
 			tagsLRU[(i*assoc)+j].valid=0;
 			tagsLRU[(i*assoc)+j].tag=0;
@@ -102,7 +118,7 @@ int main(int argc, char** argv)
 			tagsFIFO[(i*assoc)+j].replacement=0;
 		}
 	}
-	std::cout<<"Inicializados los array"<<std::endl;
+	std::cout<<"\nArray's initial"<<std::endl;
 
 	int accesses=0;
 	int missesLRU=0;
@@ -127,7 +143,7 @@ int main(int argc, char** argv)
 		int index = (address>>offsetBits)&indexMask;
 		int tag = (address>>(indexBits+offsetBits));
 
-//Actualizo la cache LRU
+		//Update cache LRU
 		if(isHit(tagsLRU, index, tag, assoc, &way)==false)
 		{
 			way = getVictimLRU(tagsLRU, index, assoc);
@@ -137,7 +153,7 @@ int main(int argc, char** argv)
 		}
 		updateLRU(tagsLRU, index, way, assoc);
 
-//Actualizo la LFU
+		//Update LFU
 		if(isHit(tagsLFU, index, tag, assoc, &way)==false)
 		{
 			way = getVictimLFU(tagsLFU, index, assoc);
@@ -147,7 +163,7 @@ int main(int argc, char** argv)
 		}
 		updateLFU(tagsLFU, index, way, assoc);
 
-//Actualizo la LIFO
+		//Update  LIFO
 		if(isHit(tagsLIFO, index, tag, assoc, &way)==false)
 		{
 			way = getVictimLIFO(tagsLIFO, index, assoc);
@@ -157,7 +173,7 @@ int main(int argc, char** argv)
 		}
 		updateLIFO(tagsLIFO, index, way, assoc);
 
-//Actualizo la FIFO
+		//Update  FIFO
 		if(isHit(tagsFIFO, index, tag, assoc, &way)==false)
 		{
 			way = getVictimFIFO(tagsFIFO, index, assoc);
@@ -170,17 +186,16 @@ int main(int argc, char** argv)
     //Close the file stream
     in.close();
 
-	std::cout<<"Resultados LRU ideal\n"<<"Accesses= "<<accesses<<" Misses= "<<missesLRU<<" Miss rate= "<<(float)missesLRU/accesses<<std::endl;
-	std::cout<<"Resultados LFU\n"<<"Accesses= "<<accesses<<" Misses= "<<missesLFU<<" Miss rate= "<<(float)missesLFU/accesses<<std::endl;
-	std::cout<<"Resultados LIFO\n"<<"Accesses= "<<accesses<<" Misses= "<<missesLIFO<<" Miss rate= "<<(float)missesLIFO/accesses<<std::endl;
-	std::cout<<"Resultados FIFO\n"<<"Accesses= "<<accesses<<" Misses= "<<missesFIFO<<" Miss rate= "<<(float)missesFIFO/accesses<<std::endl;	
+	std::cout<<"\nResults LRU ideal\n"<<"Accesses= "<<accesses<<" Misses= "<<missesLRU<<" Miss rate= "<<(float)missesLRU/accesses<<std::endl;
+	std::cout<<"\nResults LFU\n"<<"Accesses= "<<accesses<<" Misses= "<<missesLFU<<" Miss rate= "<<(float)missesLFU/accesses<<std::endl;
+	std::cout<<"\nResults LIFO\n"<<"Accesses= "<<accesses<<" Misses= "<<missesLIFO<<" Miss rate= "<<(float)missesLIFO/accesses<<std::endl;
+	std::cout<<"\nResults FIFO\n"<<"Accesses= "<<accesses<<" Misses= "<<missesFIFO<<" Miss rate= "<<(float)missesFIFO/accesses<<std::endl;
 
 	delete [] tagsLRU;
 	delete [] tagsLFU;
 	delete [] tagsLIFO;
 	delete [] tagsFIFO;
 
-	return true;
 }
 
 bool isHit(struct cacheBlock tags[], int index, int tag, int assoc, int *way){
@@ -213,9 +228,9 @@ void updateLRU(struct cacheBlock tags[], int index, int way, int assoc){
 int getVictimLRU(struct cacheBlock tags[], int index, int assoc){
 	//check empty way
 	int i;
-	for(i=0; i<assoc;i++)
+	for(i=0; i<assoc;i++) // For associativity values
 	{
-		if(tags[(index*assoc)+i].valid==false)
+		if(tags[(index*assoc)+i].valid==false) // if not valid return i
 		{
 			return i;
 		}
@@ -223,17 +238,21 @@ int getVictimLRU(struct cacheBlock tags[], int index, int assoc){
 	//look for the victim way
 	for(i=0; i<assoc;i++)
 	{
-		if(tags[(index*assoc)+i].replacement==(assoc-1))
+		if(tags[(index*assoc)+i].replacement==(assoc-1)) // if place is  before end associativity item
 			return i;
 	}
 	return i;
 }
 
-
 //LFU
 void updateLFU(struct cacheBlock tags[], int index, int way, int assoc){
 	tags[(index*assoc)+way].replacement+=1;
 }
+
+///////////////////////// *********** ///////////////////////////
+///////////////////////// *********** ///////////////////////////
+///////////////////////// *********** ///////////////////////////
+///////////////////////// *********** ///////////////////////////
 
 int getVictimLFU(struct cacheBlock tags[], int index, int assoc){
 	//check empty way
@@ -245,10 +264,19 @@ int getVictimLFU(struct cacheBlock tags[], int index, int assoc){
 			return i;
 		}
 	}
-	//look for the victim way
-
+	//----------look for the victim way ------------
+	for(i=0; i<assoc;i++)
+	{
+		if(tags[(index*assoc)+i].replacement==(assoc-1))
+			return i;
+	}
 	return 0;
 }
+///////////////////////// *********** ///////////////////////////
+///////////////////////// *********** ///////////////////////////
+///////////////////////// *********** ///////////////////////////
+///////////////////////// *********** ///////////////////////////
+
 
 //LIFO
 void updateLIFO(struct cacheBlock tags[], int index, int way, int assoc){
