@@ -195,7 +195,7 @@ int main(int argc, char** argv)
 	delete [] tagsLFU;
 	delete [] tagsLIFO;
 	delete [] tagsFIFO;
-
+return true
 }
 
 bool isHit(struct cacheBlock tags[], int index, int tag, int assoc, int *way){
