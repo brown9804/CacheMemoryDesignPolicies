@@ -1,3 +1,6 @@
+#ifndef MAIN
+#define MAIN
+
 // Belinda Brown
 // July, 2020
 // Based on the material provided - Digital Computer Structures I
@@ -270,11 +273,13 @@ int getVictimLFU(struct cacheBlock tags[], int index, int assoc){
 	// then it lowers them all the same amount until it reaches
 	// zero to some and eliminates the first zero it finds by
 	// running it from right LS to left MS.
-
 	for(i=0; i<assoc;i++)
 	{
 		if(tags[(index*assoc)+i].replacement==0)
 			return i;
+		else {
+			tags[(index*assoc)+i].replacement -= 1;
+		}
 	}
 	return 0;
 }
@@ -344,3 +349,5 @@ int getVictimFIFO(struct cacheBlock tags[], int index, int assoc){
 	}
 	return lower;
 }
+
+#endif
