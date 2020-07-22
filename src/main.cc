@@ -56,14 +56,14 @@ int main(int argc, char** argv)
 	int assoc;
 	int blockSize;
 	std::string addressesFile;
-	int numTags;
+	int numTags; // number of blocks in cache
 	int numSets;
 	int offsetBits;
 	int indexBits;
-	int indexMask;
+	int indexMask; // isolete bits index
 
-    if(argc==5)
-    {
+    if(argc==5) //Obtain values from first input
+    { // Begin argv[0]
 			cacheSize=std::stoi(argv[1]);
 			assert(isPowerOf2(cacheSize)&&"\n\nCache size must be power of 2!");
 
@@ -74,7 +74,7 @@ int main(int argc, char** argv)
 			blockSize=std::stoi(argv[3]);
 			assert(isPowerOf2(blockSize)&&"\nBlock size must be power of 2!");
 			assert(cacheSize>blockSize&&"\nCache size must be greater than blockSize!");
-
+			// variable.<action>
 			addressesFile.append(argv[4]);
 
         //std::cout<<cacheSize<<assoc<<blockSize<<addressesFile<<std::endl;
@@ -84,22 +84,29 @@ int main(int argc, char** argv)
 			std::cout<<"\nUsage: ./<program> <Mem bytes(#)> <Block size(#)> <associativity(#)> <file .h>"<<std::endl;
     	return -1;
     }
-
+		// Calculating some values
     numTags=cacheSize/blockSize;
     numSets=numTags/assoc;
     offsetBits=log2(blockSize);
     indexBits=log2(numSets);
     indexMask=numSets-1;
-
+	// Output results
 	std::cout<<"\nSimulating cache of "<<cacheSize<<" bytes, "<<numTags<<" blocks, "<<numSets<<" sets, "<<assoc<<" ways or associativity, "<<offsetBits<<" offset bits and "<<indexBits<<" index bits"<<std::endl;
-
+	// Creating arrays
+	// tags is the array size of numTags
+	// It will be distribuid in groups
+	// according with the asso number
+	// if associativity x means n groups
+ 	// of x registers, and numSets is n
 	struct cacheBlock *tagsLRU=new cacheBlock[numTags];
 	struct cacheBlock *tagsLFU=new cacheBlock[numTags];
 	struct cacheBlock *tagsLIFO=new cacheBlock[numTags];
 	struct cacheBlock *tagsFIFO=new cacheBlock[numTags];
-
+// ways is the rows and columns is the from i to n of the
+// associativity number
 	for(int i=0; i<numSets; i++){
 		for(int j=0;j<assoc;j++){
+			// j it's for moving in rows but in the same column
 			tagsLRU[(i*assoc)+j].valid=0;
 			tagsLRU[(i*assoc)+j].tag=0;
 			tagsLRU[(i*assoc)+j].dirtyBit=0;
@@ -114,7 +121,7 @@ int main(int argc, char** argv)
 			tagsLIFO[(i*assoc)+j].tag=0;
 			tagsLIFO[(i*assoc)+j].dirtyBit=0;
 			tagsLIFO[(i*assoc)+j].replacement=0;
-
+			// couting time [old]
 			tagsFIFO[(i*assoc)+j].valid=0;
 			tagsFIFO[(i*assoc)+j].tag=0;
 			tagsFIFO[(i*assoc)+j].dirtyBit=0;
@@ -131,6 +138,7 @@ int main(int argc, char** argv)
 
 
     //Create an input file stream
+		// in is the file where will be the data
     std::ifstream in(addressesFile,std::ios::in);
 
     /*
@@ -142,9 +150,15 @@ int main(int argc, char** argv)
 		//int myAccess = accesses[acc];
 		int way;
 		accesses++;
-
+		// Have l direction [long]
+		// we need of the direction the index
+		// that give set number, need the offset
+		// and the tag is the internal label to know
+		// which group is.
 		int index = (address>>offsetBits)&indexMask;
 		int tag = (address>>(indexBits+offsetBits));
+
+		// ifHit -> update if not get victim
 
 		//Update cache LRU
 		if(isHit(tagsLRU, index, tag, assoc, &way)==false)
@@ -213,6 +227,7 @@ bool isHit(struct cacheBlock tags[], int index, int tag, int assoc, int *way){
 	return(false);
 }
 
+// Condition from the begin
 bool isPowerOf2(int x)
 {
 	return !(x == 0) && !(x & (x - 1));
@@ -220,7 +235,7 @@ bool isPowerOf2(int x)
 
 //LRU
 void updateLRU(struct cacheBlock tags[], int index, int way, int assoc){
-	for(int i=0; i<assoc;i++)
+	for(int i=0; i<assoc;i++) //
 	{
 		if(tags[(index*assoc)+i].replacement<(assoc-1))
 			tags[(index*assoc)+i].replacement+=1;
@@ -259,7 +274,7 @@ void updateLFU(struct cacheBlock tags[], int index, int way, int assoc){
 // Counts the number of times each address has been accessed
 // and removes those that have been accessed less frequently.
 int getVictimLFU(struct cacheBlock tags[], int index, int assoc){
-	//check empty way
+	//check empty way -> search if not valid
 	int i;
 	for(i=0; i<assoc;i++)
 	{
