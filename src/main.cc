@@ -5,6 +5,7 @@
 // July, 2020
 // Based on the material provided - Digital Computer Structures I
 // And theoretical support from MJ Arce :)
+// Just created LFU victim way and comment the code.
 
 // This algorithm represents a cache that receives the cache size
 // in bytes, block size in bytes, associativity and a file of addresses,
