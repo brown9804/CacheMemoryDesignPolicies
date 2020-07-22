@@ -290,12 +290,14 @@ int getVictimLFU(struct cacheBlock tags[], int index, int assoc){
 	// running it from right LS to left MS.
 	for(i=0; i<assoc;i++)
 	{
-		if(tags[(index*assoc)+i].replacement==0)
+		if(tags[(index*assoc)].replacement>tags[(index*assoc)+i].replacement){
+			tags[(index*assoc)].replacement = tags[(index*assoc)+i].replacement;
 			return i;
+		} // end if
 		else {
-			tags[(index*assoc)+i].replacement -= 1;
-		}
-	}
+			tags[(index*assoc)+i].replacement = 0;
+		}// end else
+	} // end for
 	return 0;
 }
 ///////////////////////// *********** ///////////////////////////
