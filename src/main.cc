@@ -4,14 +4,12 @@
 // Belinda Brown
 // July, 2020
 // Based on the material provided - Digital Computer Structures I
-// And theoretical support from MJ Arce :)
-// Just created LFU victim way and comment the code.
+// And theoretical support in documentation from MJ Arce :)
 
 // This algorithm represents a cache that receives the cache size
 // in bytes, block size in bytes, associativity and a file of addresses,
 // and determined that the last address is 0, Return the failure rate according
 // to the addresses given for a policy of replacement LFU.
-
 
 
 #include <iostream>
@@ -291,10 +289,18 @@ int getVictimLFU(struct cacheBlock tags[], int index, int assoc){
 	// running it from right LS to left MS.
 	for(i=0; i<assoc;i++)
 	{
-		if(tags[(index*assoc)].replacement>tags[(index*assoc)+i].replacement){
+		if(tags[(index*assoc)].replacement > tags[(index*assoc)+i].replacement){
 			tags[(index*assoc)].replacement = tags[(index*assoc)+i].replacement;
 			return i;
 		} // end if
+		// Well if none of index are zero
+		// need to reduce them
+		else if(tags[(index*assoc)+i].replacement != 0 || tags[(index*assoc)].replacement != 0){
+			// until one is zero
+			while(tags[(index*assoc)+i].replacement == 0 || tags[(index*assoc)].replacement == 0){
+				tags[(index*assoc)+i].replacement -= 1;
+			}// end while
+		}// end else if
 		else {
 			tags[(index*assoc)+i].replacement = 0;
 		}// end else
