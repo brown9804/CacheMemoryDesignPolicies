@@ -23,7 +23,7 @@ build:
 	# g++ -g --std=c++11 -Wall *.cc -o cache.exe
 
 run: # Default mode
-	./cache 4096 64 2 $(DATA)accesses.h
+	./cache 4096 2 64 $(DATA)accesses.h
 
 #******************************************************************************
 ############ 							CLEAN FOR ALL
