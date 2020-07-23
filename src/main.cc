@@ -287,7 +287,7 @@ int getVictimLFU(struct cacheBlock tags[], int index, int assoc){
 	// then it lowers them all the same amount until it reaches
 	// zero to some and eliminates the first zero it finds by
 	// running it from right LS to left MS <-.
-	int k =1;
+	int k =0;
 	int z;
 	int vic_counter = 0;
 	// Each victim has the replacement bit in 1
