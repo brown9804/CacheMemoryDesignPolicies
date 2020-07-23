@@ -275,7 +275,7 @@ void updateLFU(struct cacheBlock tags[], int index, int way, int assoc){
 int getVictimLFU(struct cacheBlock tags[], int index, int assoc){
 	//check empty way -> search if not valid
 	int i;
-	for(i=0; i<assoc;i++)
+	for(i=0;i<assoc;i++)
 	{
 		if(tags[(index*assoc)+i].valid==false)
 		{
@@ -286,26 +286,31 @@ int getVictimLFU(struct cacheBlock tags[], int index, int assoc){
 	// ***. If there is a fault and if there is no counter at zero
 	// then it lowers them all the same amount until it reaches
 	// zero to some and eliminates the first zero it finds by
-	// running it from right LS to left MS.
-	for(i=0; i<assoc;i++)
-	{
-		if(tags[(index*assoc)].replacement > tags[(index*assoc)+i].replacement){
-			tags[(index*assoc)].replacement = tags[(index*assoc)+i].replacement;
+	// running it from right LS to left MS <-.
+	int k =1;
+	int z;
+	int vic_counter = 0;
+	// Each victim has the replacement bit in 1
+	while(i<assoc){
+		if(tags[(index*assoc)].replacement == 0){ // if not a victim returns the associativity
 			return i;
 		} // end if
-		// Well if none of index are zero
-		// need to reduce them
-		else if(tags[(index*assoc)+i].replacement != 0 || tags[(index*assoc)].replacement != 0){
-			// until one is zero
-			while(tags[(index*assoc)+i].replacement == 0 || tags[(index*assoc)].replacement == 0){
-				tags[(index*assoc)+i].replacement -= 1;
-			}// end while
-		}// end else if
-		else {
-			tags[(index*assoc)+i].replacement = 0;
-		}// end else
-	} // end for
-	return 0;
+		i += 1;
+	} // end while
+
+	while(k<assoc){
+		if(tags[(index*assoc)+vic_counter].replacement > tags[(index*assoc)+k].replacement){
+			vic_counter = k;
+		}
+		k+=1;
+	}
+
+	while(z<assoc){ // If none index == 0 --> sub 1 to index
+		tags[(index*assoc)+z].replacement -= 1;
+		z +=1;
+		}
+
+	return vic_counter;
 }
 ///////////////////////// *********** ///////////////////////////
 ///////////////////////// *********** ///////////////////////////
