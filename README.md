@@ -22,7 +22,7 @@ Cache memory with LRU, LFU, LIFO and FIFO politics
 ~~~~
 ./<program> <Mem bytes(#)> <Block size(#)> <associativity(#)> <file .h>  
 ~~~~
-Or you can run it a default version that is ./cache 4096 64 2 accesses.h as:
+Or you can run it a default version that is ./cache 4096 2 64 accesses.h as:
 ~~~
 <path>$ make run
 ~~~
