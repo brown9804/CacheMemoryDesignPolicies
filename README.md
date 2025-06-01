@@ -1,4 +1,4 @@
-# Cache Memory
+# Cache Memory - Design Policies
 
 University of Costa Rica
 
@@ -9,12 +9,7 @@ Last updated: 2020-07-14
 
 ------------------------------------------
 
-<div align="center">
-  <h3 style="color: #4CAF50;">Total Visitors</h3>
-  <img src="https://profile-counter.glitch.me/brown9804/count.svg" alt="Visitor Count" style="border: 2px solid #4CAF50; border-radius: 5px; padding: 5px;"/>
-</div>
-
-Cache memory with LRU, LFU, LIFO and FIFO politics
+> Cache memory with LRU, LFU, LIFO and FIFO politics
 
 ## Program actions
 
@@ -36,5 +31,10 @@ Or you can run it a default version that is ./cache 4096 2 64 accesses.h as:
 ~~~
 <path>$ make clean
 ~~~
+
+<div align="center">
+  <h3 style="color: #4CAF50;">Total Visitors</h3>
+  <img src="https://profile-counter.glitch.me/brown9804/count.svg" alt="Visitor Count" style="border: 2px solid #4CAF50; border-radius: 5px; padding: 5px;"/>
+</div>
 
 
